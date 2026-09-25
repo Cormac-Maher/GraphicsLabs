@@ -71,19 +71,26 @@
     }
 
       b1 = new Ball(1, 1, 10, 10, 10);
+      b2 = new Ball(10, 10, 10, 10, 10);
 
       // A function to repeat every time the animation loops.
       function repeatme() {
         // Draw the ball (stroked, not filled).
         ctx.clearRect(0, 0, 1000, 700);
         b1.draw();
+        b2.draw();
         b1.move();
+        b2.move();
+
         
         // drawing pacman
         ctx.beginPath();
         ctx.arc(100, 100, 50, 0.25*Math.PI, (7/4)*Math.PI);
+        ctx.lineTo(100, 100);
+        ctx.lineTo(136, 136);
+        
         ctx.stroke();
-
+        
         window.requestAnimationFrame(repeatme);
       }
 
