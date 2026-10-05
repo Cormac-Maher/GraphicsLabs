@@ -144,6 +144,23 @@
 			}
 			break;
 
+      case 187:
+		case 107:
+			if (Math.abs(b1.xDirection) < 15){
+				b1.xDirection *= 1.2;
+				b1.yDirection *= 1.2;
+			}
+			break;
+
+		// key code for - (slow the ball down)
+		case 189:
+		case 109:
+			if (Math.abs(b1.xDirection) > 1){
+				b1.xDirection /= 1.2;
+				b1.yDirection /= 1.2;
+			}
+			break;
+      
 			}
 	})
 
