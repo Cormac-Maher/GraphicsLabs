@@ -17,8 +17,9 @@
 
   <body>
 	<h1>Cormac Maher</h1>
-    <h2 id="player1"></h2>
+    <h2 id="player1"></h2><br>
     <h2 id="player2"></h2>
+    
     <canvas id="canvas-for-ball" width="600" height="400"></canvas>
 
     <script type="text/javascript">
@@ -51,7 +52,9 @@
 	  {
         // drawing paddle
         ctx.beginPath();
+        ctx.fillStyle = "black";
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+        ctx.fill();
         ctx.stroke();
       }
     }
@@ -93,12 +96,14 @@
         draw(){
         // drawing ball  
         ctx.beginPath();
+        ctx.fillStyle = "red";
         ctx.arc(this.x, this.y, this.ballRadius, 0, 2 * Math.PI);
+        ctx.fill();
         ctx.stroke();
       }  
     }
-    p1 = new Paddle(21, 1, 20);
-    p2 = new Paddle(579, 1, 20);
+    p1 = new Paddle(21, 200, 20);
+    p2 = new Paddle(579, 200, 20);
     b1 = new Ball(50, 50, 3, 3, 10);
 
     function collisionDetection(px, py, bx, by, paddelRadius, ballRadius){
@@ -135,8 +140,8 @@
         collisionDetection(p1.x, p1.y, b1.x, b1.y, p1.radius, b1.ballRadius);
 		collisionDetection(p2.x, p2.y, b1.x, b1.y, p2.radius, b1.ballRadius);
 
-        document.getElementById("player1").textContent = scorePlayer1;
-        document.getElementById("player2").textContent = scorePlayer2;
+        document.getElementById("player1").textContent = "Player 1 Score: " + scorePlayer1;
+        document.getElementById("player2").textContent = "Player 2 Score: " + scorePlayer2;
 
 		window.requestAnimationFrame(repeatme);
     }
