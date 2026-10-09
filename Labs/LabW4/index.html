@@ -17,6 +17,8 @@
 
   <body>
 	<h1>Cormac Maher</h1>
+    <h2 id="player1"></h2>
+    <h2 id="player2"></h2>
     <canvas id="canvas-for-ball" width="600" height="400"></canvas>
 
     <script type="text/javascript">
@@ -33,6 +35,8 @@
 			console.log(event);
 		});
 
+        var scorePlayer1 = 0;
+        var scorePlayer2 = 0;
 
 	class Paddle {
         constructor(x, y, radius, moveUp, moveDown) 
@@ -47,7 +51,6 @@
 	  {
         // drawing paddle
         ctx.beginPath();
-//      ctx.rect(this.x, this.y, this.width, this.height);
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.stroke();
       }
@@ -79,9 +82,11 @@
         }
         if(this.x >= canvas.width-10){
           this.xDirection *=-1;
+          scorePlayer2--;
         }         
         else if (this.x <= 10){
           this.xDirection *=-1;
+          scorePlayer1--;
         }
       }
 
@@ -91,12 +96,31 @@
         ctx.arc(this.x, this.y, this.ballRadius, 0, 2 * Math.PI);
         ctx.stroke();
       }
-
     }
+    p1 = new Paddle(21, 1, 20);
+    p2 = new Paddle(579, 1, 20);
+    b1 = new Ball(50, 50, 3, 3, 10);
 
-  p1 = new Paddle(1, 1, 20);
-  p2 = new Paddle(579, 1, 20);
-  b1 = new Ball(50, 50, 3, 3, 10);
+    function collisionDetection(px, py, bx, by, paddelRadius, ballRadius){
+        console.log();
+        if(Math.sqrt(Math.pow(bx - px, 2) + Math.pow(by - py, 2)) <= (paddelRadius + ballRadius)){
+            //alert("Hello! This is an alert message!");
+            b1.xDirection *=-1;
+            b1.yDirection *=-1;
+
+            if(px == p1.x){
+                scorePlayer1++;
+            }
+            else if(px == p2.x){
+                scorePlayer2++;
+            }
+        }
+      
+
+    } 
+        
+    
+
 
     function repeatme() {
       // Draw the ball
@@ -105,7 +129,13 @@
         b1.move();  
         p1.draw();
     	p2.draw();
-		 
+
+        collisionDetection(p1.x, p1.y, b1.x, b1.y, p1.radius, b1.ballRadius);
+		collisionDetection(p2.x, p2.y, b1.x, b1.y, p2.radius, b1.ballRadius);
+
+        document.getElementById("player1").textContent = scorePlayer1;
+        document.getElementById("player2").textContent = scorePlayer2;
+
 		window.requestAnimationFrame(repeatme);
     }
 
@@ -119,28 +149,28 @@
 
 		// key code for up arrow
 		case 38:
-			if (p1.y > 0){
+			if (p1.y >= 23){
 				p1.y -= 5;
 			}
 			break;
 
 		// key code for down arrow
 		case 40:
-			if (p1.y < 320){
+			if (p1.y <= 375){
 				p1.y += 5;
 			}
 			break;
 
       		// key code for W (paddle 2 up)
 		case 87:
-			if (p2.y > 0){
+			if (p2.y >= 23){
 				p2.y -= 5;
 			}
 			break;
 
 		// key code for S (paddle 2 down)
 		case 83:
-			if (p2.y < 320){
+			if (p2.y <= 375){
 				p2.y += 5;
 			}
 			break;
@@ -171,14 +201,14 @@
 		var mouseY = e.pageY - $(canvas).offset().top;
 
 		// Centre the paddle on the mouse.
-		p1.y = mouseY - p1.height / 2;
+		p1.y = mouseY;
 
 		// Keep the paddle inside the canvas.
-		if (p1.y < 0){
-			p1.y = 0;
+		if (p1.y <= 25){
+			p1.y = 25;
 		}
-		else if (p1.y > 320){
-			p1.y = 320;
+		else if (p1.y >= 375){
+			p1.y = 375;
 		}
 	})
 
