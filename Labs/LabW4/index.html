@@ -95,7 +95,7 @@
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.ballRadius, 0, 2 * Math.PI);
         ctx.stroke();
-      }
+      }  
     }
     p1 = new Paddle(21, 1, 20);
     p2 = new Paddle(579, 1, 20);
@@ -103,11 +103,13 @@
 
     function collisionDetection(px, py, bx, by, paddelRadius, ballRadius){
         console.log();
+        // if balls collide
         if(Math.sqrt(Math.pow(bx - px, 2) + Math.pow(by - py, 2)) <= (paddelRadius + ballRadius)){
-            //alert("Hello! This is an alert message!");
+
             b1.xDirection *=-1;
             b1.yDirection *=-1;
-
+  
+            // increments score
             if(px == p1.x){
                 scorePlayer1++;
             }
