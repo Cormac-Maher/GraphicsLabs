@@ -93,10 +93,18 @@
         }
       }
 
-        draw(){
+      draw()
+      {
+        var gradient = ctx.createRadialGradient(
+          this.x, this.y, this.ballRadius / 10, this.x, this.y, this.ballRadius );
+
+        gradient.addColorStop(0, "yellow");
+        gradient.addColorStop(0.5, "orange");
+        gradient.addColorStop(1, "red");
+
         // drawing ball  
         ctx.beginPath();
-        ctx.fillStyle = "red";
+        ctx.fillStyle = gradient;
         ctx.arc(this.x, this.y, this.ballRadius, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
