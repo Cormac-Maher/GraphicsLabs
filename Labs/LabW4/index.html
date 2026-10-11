@@ -49,10 +49,17 @@
      	}
 
       draw()
-	  {
+	   {
+
+        var gradient = ctx.createRadialGradient(
+        this.x, this.y, this.radius / 10, this.x, this.y, this.radius );
+
+        gradient.addColorStop(0, "lightblue");
+        gradient.addColorStop(1, "blue");
+
         // drawing paddle
         ctx.beginPath();
-        ctx.fillStyle = "black";
+        ctx.fillStyle = gradient;
         ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
         ctx.fill();
         ctx.stroke();
@@ -95,6 +102,7 @@
 
       draw()
       {
+        // Adding gradient to the ball
         var gradient = ctx.createRadialGradient(
           this.x, this.y, this.ballRadius / 10, this.x, this.y, this.ballRadius );
 
