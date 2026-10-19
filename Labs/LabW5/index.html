@@ -29,6 +29,7 @@
         // Implement renderer - Create a WebGL renderer for rendering the scene.
         var renderer = new THREE.WebGLRenderer();
         renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
         // creates sphere and its matrial
@@ -52,6 +53,7 @@
                 var geometry = new THREE.SphereGeometry(this.radius, this.x, this.y);
                 var material = new THREE.MeshLambertMaterial( { color: this.colour, wireframe: false } );
                 this.sphere = new THREE.Mesh(geometry, material);
+                this.sphere.castShadow = true;
                 scene.add(this.sphere);
             }
 
@@ -69,9 +71,16 @@
         var s = new Sphere(3, 32, 16, 0x00ff00);
         s.draw();
 
-
-
-
+      // Create the plane
+        var planeGeometry = new THREE.PlaneGeometry(60, 60);
+        var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xcccccc, side: THREE.DoubleSide } );
+        var plane = new THREE.Mesh(planeGeometry, planeMaterial);
+        // plane is flat
+        plane.rotation.x = -Math.PI / 2;
+        plane.position.y = -8;
+        // adds the shadow to the plane
+        plane.receiveShadow = true;
+        scene.add(plane);
 
         camera.position.z = 25;
         var spotLight = new THREE.SpotLight(0xffffff); 
