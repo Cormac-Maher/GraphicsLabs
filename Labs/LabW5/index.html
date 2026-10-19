@@ -25,6 +25,8 @@
         // Create a camera with specified properties.
         var camera = new THREE.PerspectiveCamera(80, window.innerWidth /  window.innerHeight, 0.1, 1000);
         // Set camera position
+        camera.position.set(0, 8, 25);
+        camera.lookAt(0, 0, 0);
 
         // Implement renderer - Create a WebGL renderer for rendering the scene.
         var renderer = new THREE.WebGLRenderer();
@@ -39,6 +41,7 @@
         var sphere = new THREE.Mesh(geometry, material);
         scene.add(sphere);
         */
+        var planeY = -8;
 
         class Sphere {
             constructor(radius, x, y, colour){
@@ -46,6 +49,12 @@
                 this.x = x;
                 this.y = y;
                 this.colour = colour;
+
+                // Speed of the sphere going up/down (negative = falling)
+                this.speedY = 0;
+                // Gravity pulls the speed down a little every frame
+                this.gravity = -0.01;
+
             }
 
             draw()
@@ -54,6 +63,7 @@
                 var material = new THREE.MeshLambertMaterial( { color: this.colour, wireframe: false } );
                 this.sphere = new THREE.Mesh(geometry, material);
                 this.sphere.castShadow = true;
+                this.sphere.position.y = 8; // the sphere starts above the plain
                 scene.add(this.sphere);
             }
 
@@ -63,8 +73,17 @@
                 this.sphere.rotation.x += 0.01;
                 this.sphere.rotation.y += 0.01;
 
-                this.sphere.position.x += 0.01;
-                this.sphere.position.x += 0.01;
+                this.speedY += this.gravity;
+                this.sphere.position.y += this.speedY;
+
+                // Check if the bottom of the sphere has hit the plane
+                if (this.sphere.position.y - this.radius <= planeY)
+                {
+                    // Put the sphere back on top of the plane
+                    this.sphere.position.y = planeY + this.radius;
+                    // Reverse the speed so the sphere bounces back up
+                    this.speedY = -this.speedY * 0.9;
+                }
             }
         } 
 
