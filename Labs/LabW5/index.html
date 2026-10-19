@@ -69,11 +69,18 @@
         var s = new Sphere(3, 32, 16, 0x00ff00);
         s.draw();
 
-        camera.position.z = 25;
 
+
+
+
+        camera.position.z = 25;
         var spotLight = new THREE.SpotLight(0xffffff); 
         spotLight.position.set(15, 15, 25); 
+        spotLight.castShadow = true;
         scene.add(spotLight);
+
+        var helper = new THREE.CameraHelper(spotLight.shadow.camera);
+        scene.add(helper);
 
         var repeatMe = function () 
         {           
