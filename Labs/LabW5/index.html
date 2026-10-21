@@ -34,14 +34,13 @@
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
-        // creates sphere and its matrial
- /*     var geometry = new THREE.SphereGeometry(3, 32, 16);
-        var material = new THREE.MeshLambertMaterial( { color: 0x00ff00, wireframe: false } );
         
-        var sphere = new THREE.Mesh(geometry, material);
-        scene.add(sphere);
-        */
         var planeY = -8;
+
+        // This is the size of the cube and the limits the sphere has to stay inside
+        var cubeSize = 20;
+        var cubeHalf = cubeSize / 2;        // walls are at x = +-10 and z = +-10
+        var cubeTop = planeY + cubeSize;    // the top of the cube
 
         class Sphere {
             constructor(radius, x, y, colour){
@@ -50,8 +49,10 @@
                 this.y = y;
                 this.colour = colour;
 
-                // Speed of the sphere going up/down (negative = falling)
+                // Speed of the sphere going in each direction
                 this.speedY = 0;
+                this.speedY = 0;
+                this.speedZ = 0.08;
                 // Gravity pulls the speed down a little every frame
                 this.gravity = -0.01;
 
@@ -75,15 +76,27 @@
 
                 this.speedY += this.gravity;
                 this.sphere.position.y += this.speedY;
+                this.sphere.position.z += this.speedZ;
 
-                // Check if the bottom of the sphere has hit the plane
+                // Check if the sphere has hit the floor (the plane)
                 if (this.sphere.position.y - this.radius <= planeY)
                 {
-                    // Put the sphere back on top of the plane
                     this.sphere.position.y = planeY + this.radius;
-                    // Reverse the speed so the sphere bounces back up
-                    this.speedY = -this.speedY * 0.9;
+                    this.speedY = -this.speedY;
                 }
+
+                // Check if the sphere has hit the top of the cube
+                if (this.sphere.position.y + this.radius >= cubeTop)
+                {
+                    this.sphere.position.y = cubeTop - this.radius;
+                    this.speedY = -this.speedY;
+                }
+
+
+
+
+
+                
             }
         } 
 
