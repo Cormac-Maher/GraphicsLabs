@@ -65,6 +65,15 @@
                 this.sphere = new THREE.Mesh(geometry, material);
                 this.sphere.castShadow = true;
                 this.sphere.position.y = 8; // the sphere starts above the plain
+
+                // Wireframe drawn on top of the solid sphere (same geometry, wireframe: true)
+                var wireMaterial = new THREE.MeshLambertMaterial( { color: 0x000000, wireframe: true } );
+                this.wire = new THREE.Mesh(geometry, wireMaterial);
+                
+                // it is slightly bigger than the solid sphere so the lines don't flicker into it
+                this.wire.scale.set(1.01, 1.01, 1.01);
+                this.sphere.add(this.wire);        // added to the sphere
+
                 scene.add(this.sphere);
             }
 
@@ -122,6 +131,51 @@
         var s = new Sphere(3, 32, 16, 0x00ff00);
         s.draw();
 
+        // The second sphere is maller
+        var s2 = new Sphere(2, 32, 16, 0x00ff00);
+        s2.draw();
+        s2.sphere.position.set(-5, 2, 5);
+        s2.speedX = -0.1;
+        s2.speedZ = -0.12;
+
+        // collision detection between two spheres
+        function checkCollision(a, b)
+        {
+            // Line between the centres of the two spheres
+            var normal = new THREE.Vector3().subVectors(b.sphere.position, a.sphere.position);
+            var distance = normal.length();
+            var minDistance = a.radius + b.radius;
+
+            // The spheres are touching if the distance between centres is less than the 2 radis added together
+            if (distance < minDistance)
+            {
+                normal.normalize();
+
+                // Push the spheres apart so they don't stay stuck inside each other
+                var overlap = minDistance - distance;
+                a.sphere.position.addScaledVector(normal, -overlap / 2);
+                b.sphere.position.addScaledVector(normal, overlap / 2);
+
+                // How fast the spheres are moving towards each other
+                var velA = new THREE.Vector3(a.speedX, a.speedY, a.speedZ);
+                var velB = new THREE.Vector3(b.speedX, b.speedY, b.speedZ);
+                var approachSpeed = new THREE.Vector3().subVectors(velA, velB).dot(normal);
+
+                // Only bounce them if they are moving towards each other
+                if (approachSpeed > 0)
+                {
+                    // Spheres swap their speed along the collision line
+                    a.speedX -= approachSpeed * normal.x;
+                    a.speedY -= approachSpeed * normal.y;
+                    a.speedZ -= approachSpeed * normal.z;
+
+                    b.speedX += approachSpeed * normal.x;
+                    b.speedY += approachSpeed * normal.y;
+                    b.speedZ += approachSpeed * normal.z;
+                }
+            }
+        }
+
         // Create the plane
         var planeGeometry = new THREE.PlaneGeometry(60, 60);
         var planeMaterial = new THREE.MeshLambertMaterial( { color: 0xcccccc, side: THREE.DoubleSide } );
@@ -158,6 +212,8 @@
             
             requestAnimationFrame(repeatMe);
             s.update();
+            s2.update();
+            checkCollision(s, s2);
             renderer.render(scene, camera);
         };
         repeatMe();
