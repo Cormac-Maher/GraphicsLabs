@@ -50,10 +50,10 @@
                 this.colour = colour;
 
                 // Speed of the sphere going in each direction
-                this.speedY = 0;
+                this.speedX = 0.12;
                 this.speedY = 0;
                 this.speedZ = 0.08;
-                // Gravity pulls the speed down a little every frame
+                // Gravity pulls the speed down
                 this.gravity = -0.01;
 
             }
@@ -76,6 +76,7 @@
 
                 this.speedY += this.gravity;
                 this.sphere.position.y += this.speedY;
+                this.sphere.position.x += this.speedX;
                 this.sphere.position.z += this.speedZ;
 
                 // Check if the sphere has hit the floor (the plane)
@@ -92,11 +93,29 @@
                     this.speedY = -this.speedY;
                 }
 
+                // Check if the sphere has hit the left or right wall
+                if (this.sphere.position.x + this.radius >= cubeHalf)
+                {
+                    this.sphere.position.x = cubeHalf - this.radius;
+                    this.speedX = -this.speedX;
+                }
+                else if (this.sphere.position.x - this.radius <= -cubeHalf)
+                {
+                    this.sphere.position.x = -cubeHalf + this.radius;
+                    this.speedX = -this.speedX;
+                }
 
-
-
-
-                
+                // Check if the sphere has hit the front or back wall
+                if (this.sphere.position.z + this.radius >= cubeHalf)
+                {
+                    this.sphere.position.z = cubeHalf - this.radius;
+                    this.speedZ = -this.speedZ;
+                }
+                else if (this.sphere.position.z - this.radius <= -cubeHalf)
+                {
+                    this.sphere.position.z = -cubeHalf + this.radius;
+                    this.speedZ = -this.speedZ;
+                }
             }
         } 
 
@@ -113,6 +132,17 @@
         // adds the shadow to the plane
         plane.receiveShadow = true;
         scene.add(plane);
+
+        // Create the slightly transparent cube
+        var cubeGeometry = new THREE.BoxGeometry(cubeSize, cubeSize, cubeSize);
+        var cubeMaterial = new THREE.MeshLambertMaterial( { color: 0x66aaff, transparent: true, opacity: 0.2, side: THREE.DoubleSide, depthWrite: false } );
+        var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        // the cube sits on the plane 
+        cube.position.y = planeY + cubeHalf;
+        // the cube doesnt cast a shadow
+        cube.castShadow = false;
+        scene.add(cube);
+
 
         camera.position.z = 25;
         var spotLight = new THREE.SpotLight(0xffffff); 
