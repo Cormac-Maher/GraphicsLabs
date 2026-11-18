@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Atmospheric CO2 - D3 Lab</title>
+  <!-- Exercise 2: D3 v7 from a CDN -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .axis text { font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Cormac Maher</h1>
+
+  <script>
+                                                     // download the JSON 
+    d3.json("https://raw.githubusercontent.com/humphs078/programming_for_data_analysis_assignment_2/refs/heads/main/datasets/fused_datasets/json/long_term_fused_data.json").then(function (data) {
+
+      // Exercise 4: call the plotting function once the download completes
+      plotCO2Data(data);
+    });
+
+    // executed once the file has downloaded
+    function plotCO2Data(data) {
+      // set up SVG size and margins
+      var margin = { top: 50, right: 140, bottom: 70, left: 80 },
+          width = 900 - margin.left - margin.right,
+          height = 670 - margin.top - margin.bottom;
+
+      // exercise 5.3
+      var x = d3.scaleLinear()
+          .domain(d3.extent(data, function (d) { return d["years_before_2023"]; }))
+          .range([width, 0]); 
+
+      var y = d3.scaleLinear()
+          .domain(d3.extent(data, function (d) { return d["co2_ppmv"]; }))
+          .range([height, 0]); // seems backwards because SVG y is down
+
+      // ex 5.3 Axes with number of ticks and line
+      var xAxis = d3.axisBottom(x).ticks(10);
+      var yAxis = d3.axisLeft(y).ticks(10);
+
+      var yTemp = d3.scaleLinear()
+        .domain(d3.extent(data, d => d["temp_anomaly"]))
+        .range([height, 0]);
+
+      var yCH4 = d3.scaleLinear()
+        .domain(d3.extent(data, d => d["ch4_ppb"]))
+        .range([height, 0]);
+
+      var xz = x;   
+
+      var tempLine = d3.line()
+        .defined(d => d["temp_anomaly"] != null)
+        .x(d => xz(d["years_before_2023"]))      
+        .y(d => yTemp(d["temp_anomaly"]));
+
+      var ch4Line = d3.line()
+        .defined(d => d["ch4_ppb"] != null)
+        .x(d => xz(d["years_before_2023"]))    
+        .y(d => yCH4(d["ch4_ppb"]));
+            // map x, y coords for each data point using the scales
+      var valueLine = d3.line()
+        .x(function (d) { return xz(d["years_before_2023"]); })  
+        .y(function (d) { return y(d["co2_ppmv"]); });
+
+      // 5.4 Append the SVG element, plus a <g> offset by the margins
+      var svg = d3.select("body")
+          .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // 5.5 Add axes: x-axis at the bottom, y-axis on the left (default)
+      var gX = svg.append("g")
+          .attr("class", "x axis")
+          .attr("transform", "translate(0," + height + ")")
+          .call(xAxis);
+
+      svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+
+
+      svg.append("g").attr("class", "y axis")
+        .attr("transform", "translate(" + width + ",0)")
+        .style("color", "steelblue")
+        .call(d3.axisRight(yTemp).ticks(10));
+
+      svg.append("g").attr("class", "y axis")
+        .attr("transform", "translate(" + (width + 60) + ",0)")
+        .style("color", "green")
+        .call(d3.axisRight(yCH4).ticks(10));
+
+
+      // 5.5 + 5.6 Add the line path: no fill, red stroke
+      svg.append("defs").append("clipPath").attr("id", "clip")
+        .append("rect").attr("width", width).attr("height", height);
+
+      var plot = svg.append("g").attr("clip-path", "url(#clip)");
+
+      plot.append("path").attr("class", "co2").attr("d", valueLine(data))
+          .attr("fill", "none").attr("stroke", "red").attr("stroke-width", 2);
+      plot.append("path").attr("class", "temp").attr("d", tempLine(data))
+          .attr("fill", "none").attr("stroke", "steelblue").attr("stroke-width", 2);
+      plot.append("path").attr("class", "ch4").attr("d", ch4Line(data))
+          .attr("fill", "none").attr("stroke", "green").attr("stroke-width", 2);
+
+      // 5.7 Labels (larger fonts) and chart title
+      svg.append("text") // x-axis label
+          .attr("x", width / 2)
+          .attr("y", height + 50)
+          .attr("text-anchor", "middle")
+          .style("font-size", "18px")
+          .text("Years before 2023");
+
+      svg.append("text") // y-axis label
+          .attr("transform", "rotate(-90)")
+          .attr("x", -height / 2)
+          .attr("y", -55)
+          .attr("text-anchor", "middle")
+          .style("font-size", "18px")
+          .text("CO2 (ppmv)");
+
+      svg.append("text") // chart title
+          .attr("x", width / 2)
+          .attr("y", -20)
+          .attr("text-anchor", "middle")
+          .style("font-size", "24px")
+          .text("Atmospheric CO2 Through Time");
+
+      svg.append("text")
+        .attr("transform", "rotate(90)")
+        .attr("x", height / 2).attr("y", -(width + 45))
+        .attr("text-anchor", "middle").style("font-size", "16px")
+        .style("fill", "steelblue").text("Temp anomaly (°C)");
+    
+      svg.append("text")
+        .attr("transform", "rotate(90)")
+        .attr("x", height / 2).attr("y", -(width + 110))
+        .attr("text-anchor", "middle").style("font-size", "16px")
+        .style("fill", "green").text("CH4 (ppb)");  
+
+      function zoomed(event) {
+        xz = event.transform.rescaleX(x);          // new x-scale, y untouched
+        gX.call(xAxis.scale(xz));                  // redraw x-axis
+        plot.select(".co2").attr("d", valueLine(data));
+        plot.select(".temp").attr("d", tempLine(data));
+        plot.select(".ch4").attr("d", ch4Line(data));
+      }
+
+      var zoom = d3.zoom()
+        .scaleExtent([1, 50])                          // min and max zoom
+        .translateExtent([[0, 0], [width, height]])    // can't pan outside data
+        .extent([[0, 0], [width, height]])
+        .on("zoom", zoomed);
+
+      svg.append("rect")
+        .attr("class", "zoom")
+        .attr("width", width).attr("height", height)
+        .style("fill", "none").style("pointer-events", "all")
+        .call(zoom);
+    }
+  </script>
+</body>
+</html>
