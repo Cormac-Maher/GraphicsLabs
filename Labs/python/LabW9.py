@@ -6,11 +6,11 @@ import cv2
 imgOrig = cv2.imread('ATU.jpg',)
 imgGray = cv2.cvtColor(imgOrig, cv2.COLOR_BGR2GRAY)
 
-cv2.imshow('Grayscale', imgGray)
-cv2.waitKey(0)  
-cv2.destroyAllWindows()
+#cv2.imshow('Grayscale', imgGray)
+#cv2.waitKey(0)  
+#cv2.destroyAllWindows()
 nrows = 4
-ncols = 2
+ncols = 3
 
 plt.subplot(nrows, ncols,1),plt.imshow(imgOrig, cmap = 'gray') 
 plt.title('Original'), plt.xticks([]), plt.yticks([]) 
@@ -36,16 +36,27 @@ plt.title('Sobel X'), plt.xticks([]), plt.yticks([])
 plt.subplot(nrows, ncols,6),plt.imshow(sobelVertical, cmap = 'gray') 
 plt.title('Sobel Y'), plt.xticks([]), plt.yticks([])
 
-sobelCombined = cv2.Sobel(sobelHorizontal,cv2.CV_64F,0,1,ksize=5)  # combined image
+sobelCombined2 = cv2.Sobel(sobelHorizontal,cv2.CV_64F,0,1,ksize=5)  # combined image
 plt.subplot(nrows, ncols,7),plt.imshow(sobelVertical, cmap = 'gray') 
 plt.title('Combined'), plt.xticks([]), plt.yticks([])
 
 # canny edge image
 cannyThreshold = 100
-cannyParam2 = 200 
-canny = cv2.Canny(imgIn,cannyThreshold,cannyParam2)
-
+cannyParam2 = 300 
+canny = cv2.Canny(imgGray,cannyThreshold,cannyParam2)
 plt.subplot(nrows, ncols,8),plt.imshow(canny, cmap = 'gray') 
 plt.title('Canny Edge Image'), plt.xticks([]), plt.yticks([])
+
+vertical = 1
+horizontal = 1
+for y in range(vertical):
+   for x in range(horizontal):
+      tempSobelHorizontal = cv2.Sobel(imgGray,cv2.CV_64F,horizontal,vertical,ksize=5)  # x dir 
+      sobelCombined2 = cv2.Sobel(tempSobelHorizontal,cv2.CV_64F,horizontal,vertical,ksize=5)  # combined image
+
+
+
+
+
 
 plt.show()
